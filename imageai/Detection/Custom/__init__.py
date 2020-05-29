@@ -621,7 +621,7 @@ class CustomObjectDetection:
         """
         self.__detection_config_json_path = configuration_json
 
-    def loadModel(self):
+    def loadModel(self, detection_speed="normal"):
 
         """
         'loadModel' is used to load the model into the CustomObjectDetection class
@@ -639,6 +639,25 @@ class CustomObjectDetection:
             self.__model = yolo_main(Input(shape=(None, None, 3)), 3, len(self.__model_labels))
 
             self.__model.load_weights(self.__model_path)
+
+            #AIT_TI: In officail ImageAI(v2.1.5) the CustomObjectDetection does not support the parameter "detection_speed"
+            #The following statesments are similar to the "ObjectDetection" (non-custom)
+            #However, the "__input_size" is still used in this test file to keep the compatible with officail ImageAI
+
+            if (detection_speed == "normal"):
+                self.__yolo_model_image_size = (416, 416)
+            elif (detection_speed == "fast"):
+                self.__yolo_model_image_size = (320, 320)
+            elif (detection_speed == "faster"):
+                self.__yolo_model_image_size = (208, 208)
+            elif (detection_speed == "fastest"):
+                self.__yolo_model_image_size = (128, 128)
+            elif (detection_speed == "flash"):
+                self.__yolo_model_image_size = (96, 96)
+            
+
+            self.__input_size = self.__yolo_model_image_size[0]
+            #============================================================================================
 
     def detectObjectsFromImage(self, input_image="", output_image_path="", input_type="file", output_type="file",
                                extract_detected_objects=False, minimum_percentage_probability=50, nms_treshold=0.4,
@@ -884,7 +903,7 @@ class CustomVideoObjectDetection:
         """
         self.__detection_config_json_path = configuration_json
 
-    def loadModel(self):
+    def loadModel(self,detection_speed="normal"):
         """
         'loadModel' is used to load the model into the CustomVideoObjectDetection class
 
@@ -897,7 +916,7 @@ class CustomVideoObjectDetection:
                 detector.setModelTypeAsYOLOv3()
                 detector.setModelPath(self.__model_path)
                 detector.setJsonPath(self.__detection_config_json_path)
-                detector.loadModel()
+                detector.loadModel(detection_speed)
 
                 self.__detector = detector
                 self.__model_loaded = True
@@ -907,7 +926,7 @@ class CustomVideoObjectDetection:
                                frame_detection_interval=1, minimum_percentage_probability=50, log_progress=False,
                                display_percentage_probability=True, display_object_name=True, save_detected_video=True,
                                per_frame_function=None, per_second_function=None, per_minute_function=None,
-                               video_complete_function=None, return_detected_frame=False, detection_timeout = None):
+                               video_complete_function=None, return_detected_frame=False, detection_timeout = None, live_window = False):
 
 
 
@@ -974,6 +993,7 @@ class CustomVideoObjectDetection:
         :param video_complete_function:
         :param return_detected_frame:
         :param detection_timeout:
+        :param live_window:
         :return output_video_filepath:
         :return counting:
         :return output_objects_array:
@@ -1067,7 +1087,10 @@ class CustomVideoObjectDetection:
                             output_objects_count[eachItemName] = 1
 
                     output_frames_count_dict[counting] = output_objects_count
-
+                    
+                    if(live_window == True):
+                        cv2.imshow('getCamera',detected_frame)
+                        cv2.waitKey(1)
 
                     if (save_detected_video == True):
                         output_video.write(detected_frame)
