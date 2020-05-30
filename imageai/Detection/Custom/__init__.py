@@ -1021,9 +1021,10 @@ class CustomVideoObjectDetection:
 
         frame_width = int(input_video.get(3))
         frame_height = int(input_video.get(4))
-        output_video = cv2.VideoWriter(output_video_filepath, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'),
-                                       frames_per_second,
-                                       (frame_width, frame_height))
+        if (save_detected_video == True):
+            output_video = cv2.VideoWriter(output_video_filepath, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'),
+            frames_per_second,
+            (frame_width, frame_height))
 
         counting = 0
         predicted_numbers = None

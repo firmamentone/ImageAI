@@ -16,7 +16,7 @@ video_detector.setJsonPath("detection_config_Mask.json")
 video_detector.loadModel()
 
 video_detector.detectObjectsFromVideo(camera_input=camera,
-                                          output_file_path=os.path.join(execution_path, "holo1-detected3"),
+                                          output_file_path=os.path.join(execution_path, "maskDetection"),
                                           frames_per_second=20,
                                           minimum_percentage_probability=40,
                                           log_progress=True,
